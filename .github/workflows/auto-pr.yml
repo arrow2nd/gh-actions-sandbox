@@ -15,6 +15,12 @@ jobs:
       - name: Update data
         run: echo "${{ env.TIMESTAMP }}" >> auto-pr-test.txt
 
+      - name: Create new branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git switch -c update-data-${{ env.TIMESTAMP }}
+
       - name: Commit the changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
