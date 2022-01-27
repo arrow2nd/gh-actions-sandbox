@@ -1,0 +1,31 @@
+name: AutoPR
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set timestamp as environment variable
+        run: echo "TIMESTAMP=$(date '+%s')" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update data
+        run: echo "${ TIMESTAMP }" >> auto-pr-test.txt
+
+      - name: Commit the changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: "update-data-${{ env.TIMESTAMP }}"
+          commit_message: "update: data"
+
+      - name: Create pull request
+        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "update-${{ env.TIMESTAMP }}"
+          destination_branch: "main"
+          pr_title: "update: テスト"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
