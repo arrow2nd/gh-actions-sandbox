@@ -29,8 +29,8 @@ jobs:
 
       - name: Debug Output
         run: |
-          echo steps.auto-commit-action.outputs.changes_detected 
-          echo steps.auto-commit-action.outputs.commit_hash
+          echo ${{ steps.auto-commit-action.outputs.changes_detected }}
+          echo ${{ steps.auto-commit-action.outputs.commit_hash }}
 
       - name: Create pull request
         if: ${{ steps.auto-commit-action.outputs.changes_detected == 'true' }}
