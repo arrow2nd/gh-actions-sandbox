@@ -1,0 +1,23 @@
+name: set-milestone
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  set-milestone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        env:
+          TZ: "Asia/Tokyo"
+        with:
+          script: |
+            const milestones = github.rest.issues.listMilestones({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            console.log(milestones)
