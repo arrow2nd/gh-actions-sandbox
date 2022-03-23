@@ -20,4 +20,11 @@ jobs:
               repo: context.repo.repo,
             });
 
-            console.log(milestones)
+            const res = await github.rest.issues.createMilestone({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `test`,
+              due_on: new Date(2022, 4, 19, 0, 0, 0).toISOString()
+            });
+            
+            console.log(res)
