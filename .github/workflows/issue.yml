@@ -12,7 +12,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            retuen await github.rest.issues.listForRepo({
+            return await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
@@ -21,6 +21,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(process.env.GH_ISSUES)
+            console.log(JSON.parse(process.env.GH_ISSUES))
         env:
           GH_ISSUES: ${{ toJson(steps.all_issues.outputs) }}
