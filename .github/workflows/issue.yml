@@ -22,6 +22,6 @@ jobs:
         with:
           script: |
             const json = JSON.parse(process.env.GH_ISSUES)
-            console.log(json)
+            console.log(json.data)
         env:
           GH_ISSUES: ${{ toJson(steps.all_issues.outputs.result) }}
