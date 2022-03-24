@@ -24,4 +24,4 @@ jobs:
             const json = JSON.parse(process.env.GH_ISSUES)
             console.log(json)
         env:
-          GH_ISSUES: ${{ steps.all_issues.outputs }}
+          GH_ISSUES: ${{ toJson(steps.all_issues.outputs.result) }}
