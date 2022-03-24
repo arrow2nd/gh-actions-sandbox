@@ -21,6 +21,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(JSON.parse(process.env.GH_ISSUES))
+            const json = JSON.parse(process.env.GH_ISSUES)
+            console.log(json)
         env:
-          GH_ISSUES: ${{ toJson(steps.all_issues.outputs) }}
+          GH_ISSUES: ${{ steps.all_issues.outputs }}
