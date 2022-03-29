@@ -10,22 +10,44 @@ jobs:
     if: startsWith(github.event.issue.title, '[20')
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch all issues
-        id: all_issues
-        uses: actions/github-script@v6
+      - uses: actions/github-script@v6
+        env:
+          TZ: "Asia/Tokyo"
         with:
           script: |
-            return await github.rest.issues.listForRepo({
+            const deadline = context.payload.issue.title.match(/^\[(\d{4})\/(\d{2})/);
+            if (!deadline) return;
+            const milestones = await github.rest.issues.listMilestones({
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
             
-      - name: show
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const json = JSON.parse(process.env.GH_ISSUES)
-            const j = JSON.parse(json)
-            console.log(j.data)
-        env:
-          GH_ISSUES: ${{ toJson(steps.all_issues.outputs.result) }}
+            const milestoneDeadline = `${deadline[1]}/${deadline[2]}`
+            const milestone = milestones.data.find(({ title }) => title.includes(milestoneDeadline))
+            let milestoneNumber;
+            
+            // 該当月のマイルストーンが存在しないなら作成
+            if (!milestone) {
+              const res = await github.rest.issues.createMilestone({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${milestoneDeadline} までにやること`,
+                due_on: new Date(deadline[1], deadline[2], 0).toISOString()
+              });
+              milestoneNumber = res.data.number;
+            } else {
+              milestoneNumber = milestone.number;
+            }
+            
+            if (context.payload.issue.milestone?.number === milestoneNumber) {
+              return;
+            }
+            
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              milestone: milestoneNumber
+            });
+            console.log("Added to Milestone")
+            
