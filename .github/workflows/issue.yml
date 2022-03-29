@@ -2,6 +2,8 @@ name: issue-test
 
 on:
   workflow_dispatch:
+  issues:
+    types: [opened, edited]
 
 jobs:
   build:
